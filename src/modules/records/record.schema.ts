@@ -1,4 +1,4 @@
-import { pgTable, pgEnum, uuid, varchar, timestamp, numeric, boolean, text, index } from 'drizzle-orm/pg-core';
+import { pgTable, pgEnum, uuid, varchar, timestamp,  boolean, text, index, integer } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 import { users } from '../users/user.schema.js';
 
@@ -11,7 +11,7 @@ export const records = pgTable(
     {
         id: uuid('id').primaryKey().defaultRandom(),
         userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
-        amount: numeric('amount', { precision: 12, scale: 2 }).notNull(),
+        amount: integer('amount').notNull(),
         type: recordTypeEnum('type').notNull(),
         category: varchar('category', { length: 100 }).notNull(),
         description: text('description'),

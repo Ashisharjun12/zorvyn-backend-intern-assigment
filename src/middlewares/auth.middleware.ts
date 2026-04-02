@@ -8,13 +8,13 @@ interface JwtPayload {
   id: string;
   role: UserRole;
   email: string;
-  iat?:  number;
-  exp?:  number;
+  iat?: number;
+  exp?: number;
 }
 
 
 // authenticate middleware
- 
+
 export const authenticate: RequestHandler = (req, _res, next) => {
   const authHeader = req.headers.authorization;
 
@@ -22,14 +22,14 @@ export const authenticate: RequestHandler = (req, _res, next) => {
     return next(ApiError.unauthorized('Missing or malformed Authorization header'));
   }
 
-  const token = authHeader.slice(7); 
+  const token = authHeader.slice(7);
 
   try {
     const payload = jwt.verify(token, _config.JWT_SECRET!) as JwtPayload;
 
     req.user = {
-      id:    payload.id,
-      role:  payload.role,
+      id: payload.id,
+      role: payload.role,
       email: payload.email,
     };
 

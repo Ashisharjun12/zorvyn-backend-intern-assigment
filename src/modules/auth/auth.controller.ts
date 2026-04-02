@@ -4,7 +4,7 @@ import type { IAuthService } from './auth.interface.js';
 
 
 export class AuthController {
-  constructor(private readonly authService: IAuthService) {}
+  constructor(private readonly authService: IAuthService) { }
 
 
   //register user

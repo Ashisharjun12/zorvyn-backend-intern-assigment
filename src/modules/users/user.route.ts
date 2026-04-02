@@ -20,45 +20,45 @@ router.use(authenticate);
 
 //get all users
 router.get(
-  '/',
-  customRole('admin', 'analyst'),
-  userController.getAllUsers
+    '/',
+    customRole('admin', 'analyst'),
+    userController.getAllUsers
 );
 
 //get user by id
 router.get(
-  '/:id',
-  userController.getUserById
+    '/:id',
+    userController.getUserById
 );
 
 //update user
 router.patch(
-  '/:id',
-  validate(UpdateUserSchema),
-  userController.updateUser
+    '/:id',
+    validate(UpdateUserSchema),
+    userController.updateUser
 );
 
-//update user role
+//update user role by admin
 router.patch(
-  '/:id/role',
-  customRole('admin'),
-  validate(UpdateRoleSchema),
-  userController.updateRole
+    '/:id/role',
+    customRole('admin'),
+    validate(UpdateRoleSchema),
+    userController.updateRole
 );
 
-//update user status
+//update user status  by admin
 router.patch(
-  '/:id/status',
-  customRole('admin'),
-  validate(UpdateStatusSchema),
-  userController.updateStatus
+    '/:id/status',
+    customRole('admin'),
+    validate(UpdateStatusSchema),
+    userController.updateStatus
 );
 
-//Soft delete user
+//Soft delete user by admin
 router.delete(
-  '/:id',
-  customRole('admin'),
-  userController.softDeleteUser
+    '/:id',
+    customRole('admin'),
+    userController.softDeleteUser
 );
 
 export default router;

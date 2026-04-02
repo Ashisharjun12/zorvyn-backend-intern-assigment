@@ -3,6 +3,7 @@ import { logger } from "../utils/logger.js";
 import { ApiError } from "../shared/ApiError.js";
 
 
+//error handling middleware
 export const errorHandler:ErrorRequestHandler=(err,req,res,_next)=>{
     logger.error({err ,method:req.method ,path:req.path , requestId:req.id})
 

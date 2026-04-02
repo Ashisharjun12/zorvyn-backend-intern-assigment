@@ -10,9 +10,8 @@ const router = Router();
 
 
 const authRepository = new AuthRepository();
-const authService    = new AuthService(authRepository);
-const authController = new AuthController(authService);
-
+const authService = new AuthService(authRepository)
+const authController = new AuthController(authService)
 
 
 // register route

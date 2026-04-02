@@ -1,8 +1,6 @@
 import { pgTable, pgEnum, uuid, varchar, timestamp, index } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 
-
-
 export const userRoleEnum = pgEnum('user_role', ['viewer', 'analyst', 'admin']);
 export const userStatusEnum = pgEnum('user_status', ['active', 'inactive']);
 
@@ -38,7 +36,7 @@ export type UserInsert = typeof users.$inferInsert;
 export const RegisterSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters long').max(100, 'Name must be at most 100 characters long'),
   email: z.email('Invalid Email'),
-  password: z.string().min(8, 'Password must be at least 8 characters long').regex(/[A-Z]/, 'Password must contain at least one uppercase letter').regex(/[0-9]/, 'Password must contain at least one number'),
+  password: z.string().min(4),
 
 });
 
@@ -46,7 +44,7 @@ export const RegisterSchema = z.object({
 //Login
 export const LoginSchema = z.object({
   email: z.email('Invalid Email'),
-  password: z.string().min(8, 'Password must be at least 8 characters long').regex(/[A-Z]/, 'Password must contain at least one uppercase letter').regex(/[0-9]/, 'Password must contain at least one number'),
+  password: z.string().min(4),
 });
 
 //Update User

@@ -16,6 +16,7 @@ export interface AuthPayload {
 export interface IAuthRepository {
   findByEmail(email: string): Promise<UserSelect | undefined>;
   createUser(data: Pick<UserInsert, 'name' | 'email' | 'password'>): Promise<UserSelect>;
+
 }
 
 
@@ -23,5 +24,6 @@ export interface IAuthRepository {
 export interface IAuthService {
   register(dto: RegisterDto): Promise<AuthPayload>;
   login(dto: LoginDto):       Promise<AuthPayload>;
+
 }
 

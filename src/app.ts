@@ -45,7 +45,7 @@ export class App {
         })
 
         //Api version prefix
-        const prefix = "api/v1";
+        const prefix = "/api/v1";
        
         //module routes
         this.app.use(`${prefix}/auth`,authRoutes)

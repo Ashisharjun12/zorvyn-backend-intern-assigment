@@ -4,6 +4,8 @@ import { users } from '../users/user.schema.js';
 
 export const recordTypeEnum = pgEnum('record_type', ['income', 'expense']);
 
+export type RecordType =  typeof recordTypeEnum.enumValues[number];
+
 export const records = pgTable(
     'records',
     {

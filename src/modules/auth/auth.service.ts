@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-
 import { _config } from '../../config/config.js';
 import { ApiError } from '../../shared/ApiError.js';
 import { hashPassword, comparePassword } from '../../utils/hash.js';
@@ -20,11 +19,10 @@ export class AuthService implements IAuthService {
     );
   }
 
-
-  //strip password hash
+  //remove password from user object
   private toSafeUser(user: UserSelect): SafeUser {
     const { password: _pw, ...safe } = user;
-    return safe;
+    return safe as SafeUser;
   }
 
 
@@ -32,18 +30,18 @@ export class AuthService implements IAuthService {
   async register(dto: RegisterDto): Promise<AuthPayload> {
     const existing = await this.authRepository.findByEmail(dto.email);
     if (existing) {
-      throw ApiError.badRequest('An account with this email already exists');
+      throw ApiError.badRequest('account with this email already exists');
     }
 
     //hash password
     const hashed = await hashPassword(dto.password);
 
     //create user
-    const user = await this.authRepository.createUser({
-      name:     dto.name,
-      email:    dto.email,
-      password: hashed,
-    });
+    const user = await this.authRepository.create({
+      name:dto.name,
+      email:dto.email,
+      password:hashed,
+    } as any);
 
     //sign token
     const token = this.signToken(user);
@@ -51,8 +49,7 @@ export class AuthService implements IAuthService {
   }
 
 
-
-// login user
+  //login user
   async login(dto: LoginDto): Promise<AuthPayload> {
     const user = await this.authRepository.findByEmail(dto.email);
 
@@ -75,7 +72,4 @@ export class AuthService implements IAuthService {
     const token = this.signToken(user);
     return { token, user: this.toSafeUser(user) };
   }
-
-
-  
 }

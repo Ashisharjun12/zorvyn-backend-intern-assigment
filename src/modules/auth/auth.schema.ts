@@ -1,7 +1,7 @@
-import { pgTable } from "drizzle-orm/pg-core";
 
-
-
-export const authSchema = pgTable("auth",{
-    
-})
+export {
+  RegisterSchema,
+  LoginSchema,
+  type RegisterDto,
+  type LoginDto,
+} from '../users/user.schema.js';

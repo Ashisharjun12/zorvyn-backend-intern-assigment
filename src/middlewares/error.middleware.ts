@@ -15,8 +15,6 @@ export const errorHandler:ErrorRequestHandler=(err,req,res,_next)=>{
         })
     }
 
-
-
     //unexpectd crash
 
     res.status(500).json({

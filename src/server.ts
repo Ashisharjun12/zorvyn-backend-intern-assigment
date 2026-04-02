@@ -1,16 +1,13 @@
 import { App } from "./app.js";
+import { _config } from "./config/config.js";
+import { logger } from "./utils/logger.js";
 
+const AppInstance = new App();
+const app = AppInstance.getApp();
 
-class Main{
-    private app:App;
-    constructor(){
-        this.app = new App();
-    }
-
-    public start(){
-        this.app.start();
-    }
-}
-
-const main = new Main();
-main.start();
+app.listen(_config.PORT, () => {
+    logger.info(`Server is running on port ${_config.PORT}`);
+}).on("error", (error) => {
+    logger.fatal(error, "Server failed to start");
+    process.exit(1);
+});

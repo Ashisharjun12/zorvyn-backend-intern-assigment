@@ -1,17 +1,31 @@
 import express, { Application } from "express";
-import { _config } from "./config/config.js";
-
 
 export class App {
     private app: Application;
     constructor() {
         this.app = express();
+        this.setupMiddlewares();
+        this.setupRoutes();
+        this.setupErrorHandling();
     }
 
-    public start() {
-        const { PORT } = _config;
-        this.app.listen(PORT, () => {
-            console.log(`🚀 Server is running on port ${PORT}`);
-        });
+    //middleware function
+    private setupMiddlewares(){
+      
+    }
+
+
+    //routes
+    private setupRoutes(){
+      
+    }
+
+    //error handling
+    private setupErrorHandling(){
+      
+    }
+
+    public getApp() {
+        return this.app;
     }
 }

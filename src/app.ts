@@ -4,6 +4,7 @@ import cors from "cors";
 import helmet from "helmet";
 import { httpLogger } from "./middlewares/logger.middleware.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
+import { apiLimiter } from "./middlewares/ratelimit.middleware.js";
 import authRoutes from "./modules/auth/auth.route.js";
 import userRoutes from "./modules/users/user.route.js";
 import recordRoutes from "./modules/records/record.route.js";
@@ -30,6 +31,7 @@ export class App {
         }))
         this.app.use(helmet())
         this.app.use(httpLogger)
+        this.app.use("/api", apiLimiter)
     
     }
 

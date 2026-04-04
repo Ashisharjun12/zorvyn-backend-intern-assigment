@@ -68,6 +68,7 @@ export const filterRecordSchema = z.object({
     .min(1)
     .max(100, "Limit cannot exceed 100")
     .default(20),
+  search:z.string().trim().optional()
 
 }).refine(
   (data) => {

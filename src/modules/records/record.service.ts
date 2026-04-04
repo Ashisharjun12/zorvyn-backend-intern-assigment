@@ -1,6 +1,6 @@
 import { ApiError } from '../../shared/ApiError.js';
 import { IRecordRepository, IRecordService } from "./record.interface.js";
-import { RecordSelect, RecordInsert, CreateRecordDto, UpdateRecordDto, FilterRecordDto } from './record.schema.js';
+import { RecordSelect, CreateRecordDto, UpdateRecordDto, FilterRecordDto } from './record.schema.js';
 
 export class RecordService implements IRecordService {
   constructor(private readonly recordRepo: IRecordRepository) { }

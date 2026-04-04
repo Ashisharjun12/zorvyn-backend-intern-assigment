@@ -9,7 +9,7 @@ export class RecordRepository implements IRecordRepository {
 
   // find all with filters and pagination
   async findAll(userId: string, query: FilterRecordDto): Promise<{ data: RecordSelect[], total: number }> {
-    const { limit, page, type, category, startDate, endDate } = query;
+    const { limit, page, type, category, startDate, endDate ,search } = query;
     const offset = (page - 1) * limit;
 
     // conditions 
@@ -37,6 +37,14 @@ export class RecordRepository implements IRecordRepository {
       conditions.push(lte(records.date, new Date(endDate + " 23:59:59")));
     }
 
+    //search 
+    if(search){
+      conditions.push(
+        ilike(records.description,`%${search}%`),
+        ilike(records.category,`%${search}%`)
+    )
+    }
+
     //  total count for pagination
     const totalResult = await db
       .select({ count: count() })
@@ -56,7 +64,7 @@ export class RecordRepository implements IRecordRepository {
 
     return {
       data: data,
-      total: total
+      total:total
     };
   }
 

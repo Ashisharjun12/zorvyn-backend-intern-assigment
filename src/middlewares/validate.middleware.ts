@@ -17,8 +17,8 @@ export const validate= (schema:ZodSchema , target:validateTarget='body'):Request
        
     }
 
- req[target]=result.data;
- next()
+    Object.assign(req[target] as object, result.data);
+    next();
   
 
 }

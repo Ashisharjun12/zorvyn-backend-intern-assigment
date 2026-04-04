@@ -5,7 +5,6 @@ import { asyncHandler } from '../../middlewares/asyncHandler.middleware.js';
 export class DashboardController {
   constructor(private readonly dashboardService: IDashboardService) {}
 
-  // get dashboard data
   getDashboardData = asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user!.id;
     const filters = req.query as any;

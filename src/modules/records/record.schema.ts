@@ -6,6 +6,36 @@ export const recordTypeEnum = pgEnum('record_type', ['income', 'expense']);
 
 export type RecordType =  typeof recordTypeEnum.enumValues[number];
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Record:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *         userId:
+ *           type: string
+ *           format: uuid
+ *         amount:
+ *           type: integer
+ *         type:
+ *           type: string
+ *           enum: [income, expense]
+ *         category:
+ *           type: string
+ *         description:
+ *           type: string
+ *           nullable: true
+ *         date:
+ *           type: string
+ *           format: date-time
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ */
 export const records = pgTable(
     'records',
     {

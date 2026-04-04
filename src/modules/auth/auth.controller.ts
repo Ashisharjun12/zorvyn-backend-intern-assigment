@@ -7,7 +7,6 @@ export class AuthController {
   constructor(private readonly authService: IAuthService) { }
 
 
-  //register user
   register = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const result = await this.authService.register(req.body);
     res.status(201).json({
@@ -17,7 +16,6 @@ export class AuthController {
     });
   });
 
-  //login user
   login = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const result = await this.authService.login(req.body);
     res.status(200).json({

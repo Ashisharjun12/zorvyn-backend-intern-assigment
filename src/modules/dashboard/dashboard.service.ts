@@ -2,7 +2,7 @@ import { IDashboardRepository, IDashboardService, DashboardData } from './dashbo
 import { DashboardQueryDto } from './dashboard.schema.js';
 
 export class DashboardService implements IDashboardService {
-  constructor(private readonly dashboardRepo: IDashboardRepository) {}
+  constructor(private readonly dashboardRepo: IDashboardRepository) { }
 
   async getDashboardData(userId: string, filters: DashboardQueryDto): Promise<DashboardData> {
     //  fetch all in parallel

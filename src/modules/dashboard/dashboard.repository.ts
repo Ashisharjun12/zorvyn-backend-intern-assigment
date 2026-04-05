@@ -1,17 +1,17 @@
 import { eq, and, gte, lte, sum, count, desc, sql } from 'drizzle-orm';
 import { db } from '../../config/database.js';
 import { records } from '../records/record.schema.js';
-import { 
-  IDashboardRepository, 
-  SummaryStats, 
-  CategoryTotal, 
-  MonthlyTrends, 
-  RecentActivity 
+import {
+  IDashboardRepository,
+  SummaryStats,
+  CategoryTotal,
+  MonthlyTrends,
+  RecentActivity
 } from './dashboard.interface.js';
 import { DashboardQueryDto } from './dashboard.schema.js';
 
 export class DashboardRepository implements IDashboardRepository {
-  
+
   //  get filters
   private getFilters(userId: string, filters: DashboardQueryDto) {
     const conditions = [];
@@ -97,7 +97,7 @@ export class DashboardRepository implements IDashboardRepository {
       .groupBy(monthSql, records.type)
       .orderBy(monthSql);
 
-  // group by month in js
+    // group by month in js
     const trendMap = new Map<string, MonthlyTrends>();
 
     results.forEach(r => {

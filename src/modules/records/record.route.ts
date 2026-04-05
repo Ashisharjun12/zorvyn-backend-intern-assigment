@@ -6,6 +6,7 @@ import { authenticate } from "../../middlewares/auth.middleware.js";
 import { customRole } from "../../middlewares/rabc.middleware.js";
 import { validate } from "../../middlewares/validate.middleware.js";
 import { CreateRecordSchema, UpdateRecordSchema, filterRecordSchema } from "./record.schema.js";
+import { ROLES } from "../../middlewares/rabc.middleware.js";
 
 const router = Router();
 
@@ -72,7 +73,7 @@ router.use(authenticate);
  */
 router.get(
     "/",
-    customRole("admin", "analyst"),
+    customRole(ROLES.ADMIN, ROLES.ANALYST),
     validate(filterRecordSchema, "query"),
     recordController.getRecords
 );
@@ -110,7 +111,7 @@ router.get(
  */
 router.post(
     "/",
-    customRole("admin"),
+    customRole(ROLES.ADMIN),
     validate(CreateRecordSchema),
     recordController.createRecord
 );
@@ -136,7 +137,7 @@ router.post(
  */
 router.get(
     "/:id",
-    customRole("admin", "analyst"),
+    customRole(ROLES.ADMIN, ROLES.ANALYST),
     recordController.getRecord
 );
 
@@ -172,7 +173,7 @@ router.get(
  */
 router.patch(
     "/:id",
-    customRole("admin"),
+    customRole(ROLES.ADMIN),
     validate(UpdateRecordSchema),
     recordController.updateRecord
 );
@@ -199,7 +200,7 @@ router.patch(
  */
 router.delete(
     "/:id",
-    customRole("admin"),
+    customRole(ROLES.ADMIN),
     recordController.softDeleteRecord
 );
 

@@ -6,6 +6,7 @@ import { authenticate } from '../../middlewares/auth.middleware.js';
 import { customRole } from '../../middlewares/rabc.middleware.js';
 import { validate } from '../../middlewares/validate.middleware.js';
 import { UpdateUserSchema, UpdateRoleSchema, UpdateStatusSchema } from './user.schema.js';
+import { ROLES } from '../../middlewares/rabc.middleware.js';
 
 const router = Router();
 
@@ -48,7 +49,7 @@ router.use(authenticate);
  */
 router.get(
     '/',
-    customRole('admin'),
+    customRole(ROLES.ADMIN),
     userController.getAllUsers
 );
 
@@ -136,7 +137,7 @@ router.patch(
  */
 router.patch(
     '/:id/role',
-    customRole('admin'),
+    customRole(ROLES.ADMIN),
     validate(UpdateRoleSchema),
     userController.updateRole
 );
@@ -169,7 +170,7 @@ router.patch(
  */
 router.patch(
     '/:id/status',
-    customRole('admin'),
+    customRole(ROLES.ADMIN),
     validate(UpdateStatusSchema),
     userController.updateStatus
 );
@@ -195,7 +196,7 @@ router.patch(
  */
 router.delete(
     '/:id',
-    customRole('admin'),
+    customRole(ROLES.ADMIN),
     userController.softDeleteUser
 );
 

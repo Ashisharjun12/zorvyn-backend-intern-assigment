@@ -6,6 +6,7 @@ import { authenticate } from "../../middlewares/auth.middleware.js";
 import { customRole } from "../../middlewares/rabc.middleware.js";
 import { validate } from "../../middlewares/validate.middleware.js";
 import { dashboardQuerySchema } from "./dashboard.schema.js";
+import { ROLES } from "../../middlewares/rabc.middleware.js";
 
 const router = Router();
 
@@ -79,7 +80,7 @@ router.use(authenticate);
  */
 router.get(
   "/",
-  customRole("admin", "analyst", "viewer"),
+  customRole(ROLES.ADMIN, ROLES.ANALYST, ROLES.VIEWER),
   validate(dashboardQuerySchema, "query"),
   dashboardController.getDashboardData
 );

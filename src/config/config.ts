@@ -3,7 +3,7 @@ import { config } from "dotenv"
 config({debug:true});
 
 
-const { PORT, NODE_ENV, DATABASE_URL, JWT_SECRET, JWT_EXPIRES_IN, APP_URL } = process.env;
+const { PORT, NODE_ENV, DATABASE_URL, JWT_SECRET, JWT_EXPIRES_IN, APP_URL ,TEST_DATABASE_URL} = process.env;
 
 export const _config = {
     PORT: PORT || 8000,
@@ -11,6 +11,7 @@ export const _config = {
     DATABASE_URL,
     JWT_SECRET,
     JWT_EXPIRES_IN,
-    APP_URL: APP_URL
+    APP_URL,
+    TEST_DATABASE_URL
 }
 

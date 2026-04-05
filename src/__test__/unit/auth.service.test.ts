@@ -7,7 +7,7 @@ vi.mock('../../utils/hash.js', () => ({
   comparePassword: vi.fn().mockResolvedValue(true) 
 }));
 
-describe('AuthService Test', () => {
+describe('AuthService Unit Testing', () => {
 
     //register user
   it('should register a new user successfully', async () => {
@@ -25,6 +25,7 @@ describe('AuthService Test', () => {
   //auth service instance
     const authService = new AuthService(mockRepository as any);
 
+    //user payload
     const userData = {
       name: 'Ashish',
       email: 'test@gmail.com',
@@ -47,6 +48,8 @@ describe('AuthService Test', () => {
 
   it('should login a user successfully', async () => {
     //Arrange
+
+    //mock user payload
     const mockUser = {
         id: '123',
         email: 'test@gmail.com',

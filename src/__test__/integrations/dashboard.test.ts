@@ -79,7 +79,7 @@ describe('Dashboard Integration Testing', () => {
             expect(response.body.data.recentActivity).toHaveLength(2);
         });
 
-        
+        // multi-tenancy
         it('should not allow other user to access dashboard data', async () => {
              // Admin adds records
              await request(app).post('/api/v1/records').set('Authorization', `Bearer ${adminToken}`).send({

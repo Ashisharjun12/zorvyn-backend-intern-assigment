@@ -39,7 +39,7 @@ router.use(authenticate);
  * /users:
  *   get:
  *     tags: [Users]
- *     summary: Get all users (Admin/Analyst only)
+ *     summary: Get all users (Admin only)
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -48,7 +48,7 @@ router.use(authenticate);
  */
 router.get(
     '/',
-    customRole('admin', 'analyst'),
+    customRole('admin'),
     userController.getAllUsers
 );
 

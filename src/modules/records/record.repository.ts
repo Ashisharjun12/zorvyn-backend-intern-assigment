@@ -1,4 +1,4 @@
-import { eq, and, desc, gte, lte, count, ilike } from 'drizzle-orm';
+import { eq, and, or, desc, gte, lte, count, ilike } from 'drizzle-orm';
 import { db } from '../../config/database.js';
 import { records } from './record.schema.js';
 import { ApiError } from '../../shared/ApiError.js';
@@ -9,7 +9,7 @@ export class RecordRepository implements IRecordRepository {
 
   // find all with filters and pagination
   async findAll(userId: string, query: FilterRecordDto): Promise<{ data: RecordSelect[], total: number }> {
-    const { limit, page, type, category, startDate, endDate ,search } = query;
+    const { limit, page, type, category, startDate, endDate, search } = query;
     const offset = (page - 1) * limit;
 
     // conditions 
@@ -40,9 +40,11 @@ export class RecordRepository implements IRecordRepository {
     //search 
     if(search){
       conditions.push(
-        ilike(records.description,`%${search}%`),
-        ilike(records.category,`%${search}%`)
-    )
+        or(
+          ilike(records.description,`%${search}%`),
+          ilike(records.category,`%${search}%`)
+        )
+      )
     }
 
     //  total count for pagination
@@ -64,17 +66,17 @@ export class RecordRepository implements IRecordRepository {
 
     return {
       data: data,
-      total:total
+      total: total
     };
   }
 
 
   // find by id
-  async findById(id: string): Promise<RecordSelect | undefined> {
+  async findById(id: string, userId: string): Promise<RecordSelect | undefined> {
     const [record] = await db
       .select()
       .from(records)
-      .where(and(eq(records.id, id), eq(records.isDeleted, false))).limit(1);
+      .where(and(eq(records.id, id), eq(records.userId, userId), eq(records.isDeleted, false))).limit(1);
     return record;
   }
 
@@ -88,11 +90,11 @@ export class RecordRepository implements IRecordRepository {
   }
 
   // update
-  async update(id: string, data: Partial<RecordInsert>): Promise<RecordSelect> {
+  async update(id: string, userId: string, data: Partial<RecordInsert>): Promise<RecordSelect> {
     const [updated] = await db
       .update(records)
       .set({ ...data, updatedAt: new Date() })
-      .where(and(eq(records.id, id), eq(records.isDeleted, false)))
+      .where(and(eq(records.id, id), eq(records.userId, userId), eq(records.isDeleted, false)))
       .returning();
 
     if (!updated) throw ApiError.notFound('Record not found or already deleted');
@@ -100,11 +102,11 @@ export class RecordRepository implements IRecordRepository {
   }
 
   // soft delete
-  async softDelete(id: string): Promise<void> {
+  async softDelete(id: string, userId: string): Promise<void> {
     const [deleted] = await db
       .update(records)
       .set({ isDeleted: true, updatedAt: new Date() })
-      .where(and(eq(records.id, id), eq(records.isDeleted, false)))
+      .where(and(eq(records.id, id), eq(records.userId, userId), eq(records.isDeleted, false)))
       .returning();
 
     if (!deleted) throw ApiError.notFound('Record not found');

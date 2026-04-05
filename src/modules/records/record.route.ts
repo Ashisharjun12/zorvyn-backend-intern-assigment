@@ -71,9 +71,9 @@ router.use(authenticate);
  *         description: List of records
  */
 router.get(
-    "/", 
+    "/",
     customRole("admin", "analyst"),
-    validate(filterRecordSchema, "query"), 
+    validate(filterRecordSchema, "query"),
     recordController.getRecords
 );
 
@@ -109,9 +109,9 @@ router.get(
  *               $ref: '#/components/schemas/Record'
  */
 router.post(
-    "/", 
+    "/",
     customRole("admin"),
-    validate(CreateRecordSchema), 
+    validate(CreateRecordSchema),
     recordController.createRecord
 );
 
@@ -135,7 +135,7 @@ router.post(
  *         description: Record details
  */
 router.get(
-    "/:id", 
+    "/:id",
     customRole("admin", "analyst"),
     recordController.getRecord
 );
@@ -171,9 +171,9 @@ router.get(
  *         description: Record updated successfully
  */
 router.patch(
-    "/:id", 
+    "/:id",
     customRole("admin"),
-    validate(UpdateRecordSchema), 
+    validate(UpdateRecordSchema),
     recordController.updateRecord
 );
 
@@ -198,7 +198,7 @@ router.patch(
  *         description: Record deleted successfully
  */
 router.delete(
-    "/:id", 
+    "/:id",
     customRole("admin"),
     recordController.softDeleteRecord
 );

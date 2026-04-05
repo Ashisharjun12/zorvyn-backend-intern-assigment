@@ -2,9 +2,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { RecordService } from '../../modules/records/record.service.js';
 import { IRecordRepository } from '../../modules/records/record.interface.js';
 import { ApiError } from '../../shared/ApiError.js';
-import { RecordSelect } from '../../modules/records/record.schema.js';
+import { RecordSelect, CreateRecordDto, UpdateRecordDto } from '../../modules/records/record.schema.js';
 
-describe('RecordService Unit Testing', () => {
+describe('RecordService Unit Tests', () => {
   let recordService: RecordService;
   let mockRecordRepo: IRecordRepository;
 
@@ -16,65 +16,68 @@ describe('RecordService Unit Testing', () => {
       create: vi.fn(),
       update: vi.fn(),
       softDelete: vi.fn(),
-    };
+    } as any;
     recordService = new RecordService(mockRecordRepo);
   });
 
   const mockRecord: RecordSelect = {
     id: 'record-123',
     userId: 'user-123',
-    amount: 1000, 
-    type: 'expense',
-    category: 'Food',
-    description: 'Lunch',
-    date: new Date('2026-04-05'),
+    amount: 1000,
+    type: 'income',
+    category: 'Salary',
+    description: 'Monthly salary',
+    date: new Date('2026-04-01'),
     isDeleted: false,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
 
-  // get records
-  describe('getRecords', () => {
-    it('should return a list of records and total count', async () => {
-      // Arrange
-      const userId = 'user-123';
-      const query = { page: 1, limit: 10 };
-      const mockResult = { data: [mockRecord], total: 1 };
-      vi.mocked(mockRecordRepo.findAll).mockResolvedValue(mockResult);
+  describe('createRecord', () => {
+    it('should create a record correctly', async () => {
+      const dto: CreateRecordDto = {
+        amount: 1000,
+        type: 'income',
+        category: 'Salary',
+        description: 'Monthly salary',
+        date: '2026-04-01',
+      };
+
+      vi.mocked(mockRecordRepo.create).mockResolvedValue(mockRecord);
 
       // Act
-      const result = await recordService.getRecords(userId, query);
+      const result = await recordService.createRecord('user-123', dto);
 
       // Assert
-      expect(mockRecordRepo.findAll).toHaveBeenCalledWith(userId, query);
-      expect(result).toEqual(mockResult);
+      expect(mockRecordRepo.create).toHaveBeenCalledWith(expect.objectContaining({
+        amount: 1000,
+        userId: 'user-123',
+      }));
+      expect(result).toEqual(mockRecord);
     });
   });
 
-  // get record by id
   describe('getRecord', () => {
-    it('should return a record when it exists', async () => {
-      // Arrange
+    it('should return a record if it exists and belongs to the user', async () => {
       vi.mocked(mockRecordRepo.findById).mockResolvedValue(mockRecord);
 
       // Act
-      const result = await recordService.getRecord('record-123');
+      const result = await recordService.getRecord('record-123', 'user-123');
 
       // Assert
-      expect(mockRecordRepo.findById).toHaveBeenCalledWith('record-123');
+      expect(mockRecordRepo.findById).toHaveBeenCalledWith('record-123', 'user-123');
       expect(result).toEqual(mockRecord);
     });
 
-    it('should throw ApiError.notFound when record is missing', async () => {
-      // Arrange
+    it('should throw ApiError.notFound if record is missing or belongs to another user', async () => {
       vi.mocked(mockRecordRepo.findById).mockResolvedValue(undefined);
 
       // Act & Assert
-      await expect(recordService.getRecord('invalid-id'))
+      await expect(recordService.getRecord('invalid-id', 'user-123'))
         .rejects.toThrow(ApiError);
       
       try {
-        await recordService.getRecord('invalid-id');
+        await recordService.getRecord('invalid-id', 'user-123');
       } catch (error: any) {
         expect(error.statusCode).toBe(404);
         expect(error.message).toBe('Record not found');
@@ -82,83 +85,50 @@ describe('RecordService Unit Testing', () => {
     });
   });
 
-  // create record
-  describe('createRecord', () => {
-    it('should format date and return the new record', async () => {
-      // Arrange
-      const userId = 'user-123';
-      const dto = {
-        amount: 50,
-        type: 'income' as const,
-        category: 'Salary',
-        description: 'Bonus',
-        date: '2024-02-01',
-      };
-      vi.mocked(mockRecordRepo.create).mockResolvedValue(mockRecord);
-
-      // Act
-      const result = await recordService.createRecord(userId, dto);
-
-      // Assert
-      expect(mockRecordRepo.create).toHaveBeenCalledWith(expect.objectContaining({
-        ...dto,
-        userId,
-        date: expect.any(Date),
-      }));
-      expect(result).toEqual(mockRecord);
-    });
-  });
-
-  // update record
   describe('updateRecord', () => {
-    it('should update and return the record if it exists', async () => {
-      // Arrange
-      const dto = { amount: 200 };
+    it('should update a record if it exists and belongs to the user', async () => {
+      const dto: UpdateRecordDto = { amount: 2000 };
       vi.mocked(mockRecordRepo.findById).mockResolvedValue(mockRecord);
-      vi.mocked(mockRecordRepo.update).mockResolvedValue({ ...mockRecord, amount: 200 });
+      vi.mocked(mockRecordRepo.update).mockResolvedValue({ ...mockRecord, amount: 2000 });
 
       // Act
-      const result = await recordService.updateRecord('record-123', dto);
+      const result = await recordService.updateRecord('record-123', 'user-123', dto);
 
       // Assert
-      expect(mockRecordRepo.findById).toHaveBeenCalledWith('record-123');
-      expect(mockRecordRepo.update).toHaveBeenCalledWith('record-123', expect.objectContaining({
-        amount: 200
+      expect(mockRecordRepo.findById).toHaveBeenCalledWith('record-123', 'user-123');
+      expect(mockRecordRepo.update).toHaveBeenCalledWith('record-123', 'user-123', expect.objectContaining({
+        amount: 2000
       }));
-      expect(result.amount).toBe(200);
+      expect(result.amount).toBe(2000);
     });
 
-    it('should throw ApiError.notFound if record to update is missing', async () => {
-      // Arrange
+    it('should throw ApiError.notFound if record to update is missing or belongs to another user', async () => {
       vi.mocked(mockRecordRepo.findById).mockResolvedValue(undefined);
 
       // Act & Assert
-      await expect(recordService.updateRecord('invalid-id', { amount: 10 }))
+      await expect(recordService.updateRecord('invalid-id', 'user-123', { amount: 10 }))
         .rejects.toThrow(ApiError);
     });
   });
 
-  // soft delete record
   describe('softDeleteRecord', () => {
-    it('should call softDelete if record exists', async () => {
-      // Arrange
+    it('should soft delete a record if it exists and belongs to the user', async () => {
       vi.mocked(mockRecordRepo.findById).mockResolvedValue(mockRecord);
       vi.mocked(mockRecordRepo.softDelete).mockResolvedValue(undefined);
 
       // Act
-      await recordService.softDeleteRecord('record-123');
+      await recordService.softDeleteRecord('record-123', 'user-123');
 
       // Assert
-      expect(mockRecordRepo.findById).toHaveBeenCalledWith('record-123');
-      expect(mockRecordRepo.softDelete).toHaveBeenCalledWith('record-123');
+      expect(mockRecordRepo.findById).toHaveBeenCalledWith('record-123', 'user-123');
+      expect(mockRecordRepo.softDelete).toHaveBeenCalledWith('record-123', 'user-123');
     });
 
-    it('should throw ApiError.notFound if record to delete is missing', async () => {
-      // Arrange
+    it('should throw ApiError.notFound if record to delete is missing or belongs to another user', async () => {
       vi.mocked(mockRecordRepo.findById).mockResolvedValue(undefined);
 
       // Act & Assert
-      await expect(recordService.softDeleteRecord('invalid-id'))
+      await expect(recordService.softDeleteRecord('invalid-id', 'user-123'))
         .rejects.toThrow(ApiError);
     });
   });

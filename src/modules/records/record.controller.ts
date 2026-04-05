@@ -7,7 +7,7 @@ export class RecordController {
 
   // create a new record
   createRecord = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const userId = req.user!.id;
+    const userId = req.user!.id; // extracted from authenticate middleware
     const record = await this.recordService.createRecord(userId, req.body);
     
     res.status(201).json({
@@ -33,7 +33,8 @@ export class RecordController {
   // get record by its id
   getRecord = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const id = req.params.id as string;
-    const record = await this.recordService.getRecord(id);
+    const userId = req.user!.id;
+    const record = await this.recordService.getRecord(id, userId);
     
     res.status(200).json({
       success: true,
@@ -46,7 +47,8 @@ export class RecordController {
   // update record
   updateRecord = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const id = req.params.id as string;
-    const record = await this.recordService.updateRecord(id, req.body);
+    const userId = req.user!.id;
+    const record = await this.recordService.updateRecord(id, userId, req.body);
     
     res.status(200).json({
       success: true,
@@ -58,7 +60,8 @@ export class RecordController {
   // soft delete record
   softDeleteRecord = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const id = req.params.id as string;
-    await this.recordService.softDeleteRecord(id);
+    const userId = req.user!.id;
+    await this.recordService.softDeleteRecord(id, userId);
     
     res.status(200).json({
       success: true,

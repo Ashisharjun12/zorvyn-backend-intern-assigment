@@ -11,8 +11,8 @@ export class RecordService implements IRecordService {
   }
 
   // get record by its id
-  async getRecord(id: string): Promise<RecordSelect> {
-    const record = await this.recordRepo.findById(id);
+  async getRecord(id: string, userId: string): Promise<RecordSelect> {
+    const record = await this.recordRepo.findById(id, userId);
 
     if (!record) {
       throw ApiError.notFound('Record not found');
@@ -34,15 +34,15 @@ export class RecordService implements IRecordService {
 
 
   // update  record
-  async updateRecord(id: string, dto: UpdateRecordDto): Promise<RecordSelect> {
+  async updateRecord(id: string, userId: string, dto: UpdateRecordDto): Promise<RecordSelect> {
     // check record if exist
-    const existing = await this.recordRepo.findById(id);
+    const existing = await this.recordRepo.findById(id, userId);
 
     if (!existing) {
       throw ApiError.notFound('Record not found');
     }
 
-    return this.recordRepo.update(id, {
+    return this.recordRepo.update(id, userId, {
       ...dto,
       date: dto.date ? new Date(dto.date) : undefined,
     });
@@ -50,13 +50,13 @@ export class RecordService implements IRecordService {
 
 
   // soft delete record
-  async softDeleteRecord(id: string): Promise<void> {
-    const record = await this.recordRepo.findById(id);
+  async softDeleteRecord(id: string, userId: string): Promise<void> {
+    const record = await this.recordRepo.findById(id, userId);
 
     if (!record) {
       throw ApiError.notFound('Record not found');
     }
 
-    await this.recordRepo.softDelete(id);
+    await this.recordRepo.softDelete(id, userId);
   }
 }

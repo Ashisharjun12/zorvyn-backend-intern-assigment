@@ -1,8 +1,10 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UserService } from '../../modules/users/user.service.js';
-
+import { IUserRepository } from '../../modules/users/user.interface.js';
 
 describe('UserService Unit Testing', () => {
+    let userService: UserService;
+    let mockUserRepo: IUserRepository;
 
     const mockUser = {
         id: 'user-123',
@@ -13,88 +15,87 @@ describe('UserService Unit Testing', () => {
         status: 'active'
     };
 
-// get all users test
-    it('should return all users and remove passwords ', async () => {
+    // setup mock repository
+    beforeEach(() => {
+        mockUserRepo = {
+            findAll: vi.fn(),
+            findById: vi.fn(),
+            findByEmail: vi.fn(),
+            create: vi.fn(),
+            update: vi.fn(),
+            softDelete: vi.fn(),
+        } as unknown as IUserRepository;
+        
+        userService = new UserService(mockUserRepo);
+    });
+
+    // get all users
+    it('should return all users and remove passwords', async () => {
         // Arrange
-        const mockRepository = {
-            findAll: vi.fn().mockResolvedValue([mockUser])
-        };
-        const userService = new UserService(mockRepository as any);
+        vi.mocked(mockUserRepo.findAll).mockResolvedValue([mockUser as any]);
 
         // Act
         const result = await userService.getAllUsers();
 
         // Assert
+        expect(mockUserRepo.findAll).toHaveBeenCalledTimes(1);
         expect(result).toHaveLength(1);
         expect(result[0]).not.toHaveProperty('password'); 
         expect(result[0].name).toBe('Ashish');
     });
 
+    // get user by id
+    describe('getUserById', () => {
+        it('should get a single user by ID successfully', async () => {
+            // Arrange
+            vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser as any);
 
-    // get single user test
-    it('should get a single user by ID successfully', async () => {
-        // Arrange
-        const mockRepository = {
-            findById: vi.fn().mockResolvedValue(mockUser)
-        };
-        const userService = new UserService(mockRepository as any);
+            // Act
+            const result = await userService.getUserById('user-123');
 
-        // Act
-        const result = await userService.getUserById('user-123');
+            // Assert
+            expect(mockUserRepo.findById).toHaveBeenCalledWith('user-123');
+            expect(result.id).toBe('user-123');
+            expect(result).not.toHaveProperty('password');
+        });
 
-        // Assert
-        expect(result.id).toBe('user-123');
-        expect(result).not.toHaveProperty('password');
+        it('should throw Error 404 if user is not found', async () => {
+            // Arrange
+            vi.mocked(mockUserRepo.findById).mockResolvedValue(null as any);
+
+            // Act & Assert
+            await expect(userService.getUserById('wrong-id')).rejects.toThrow('User not found');
+        });
     });
 
-
-    // get single user test
-    it('should throw Error 404 if user is not found', async () => {
-        // Arrange
-        const mockRepository = {
-            findById: vi.fn().mockResolvedValue(null) // Not found
-        };
-        const userService = new UserService(mockRepository as any);
-
-        // Act & Assert
-        // We expect an error here
-        await expect(userService.getUserById('wrong-id')).rejects.toThrow('User not found');
-    });
-
-
-    // update user test
+    // update user
     it('should update user info successfully', async () => {
         // Arrange
         const updatedUser = { ...mockUser, name: 'Ashish Updated' };
-        const mockRepository = {
-            findById: vi.fn().mockResolvedValue(mockUser),
-            update: vi.fn().mockResolvedValue(updatedUser)
-        };
-        const userService = new UserService(mockRepository as any);
+        vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser as any);
+        vi.mocked(mockUserRepo.update).mockResolvedValue(updatedUser as any);
 
         // Act
         const result = await userService.updateUser('user-123', { name: 'Ashish Updated' });
 
-        //  Assert
+        // Assert
+        expect(mockUserRepo.findById).toHaveBeenCalledWith('user-123');
+        expect(mockUserRepo.update).toHaveBeenCalledWith('user-123', { name: 'Ashish Updated' });
         expect(result.name).toBe('Ashish Updated');
-        expect(mockRepository.update).toHaveBeenCalledWith('user-123', { name: 'Ashish Updated' });
     });
 
-    // soft delete user test
+    // soft delete user
     it('should soft delete a user correctly', async () => {
         // Arrange
-        const mockRepository = {
-            findById: vi.fn().mockResolvedValue(mockUser),
-            softDelete: vi.fn().mockResolvedValue(undefined)
-        };
-        const userService = new UserService(mockRepository as any);
+        vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser as any);
+        vi.mocked(mockUserRepo.softDelete).mockResolvedValue(undefined as any);
 
-        //  Act
+        // Act
         await userService.softDeleteUser('user-123');
 
         // Assert
-        expect(mockRepository.softDelete).toHaveBeenCalledTimes(1);
-        expect(mockRepository.softDelete).toHaveBeenCalledWith('user-123');
+        expect(mockUserRepo.findById).toHaveBeenCalledWith('user-123');
+        expect(mockUserRepo.softDelete).toHaveBeenCalledWith('user-123');
+        expect(mockUserRepo.softDelete).toHaveBeenCalledTimes(1);
     });
-
 });

@@ -1,9 +1,9 @@
 {
-  "family": "zorvyn-backend",
+  "family": "assignment-backend-task",
   "executionRoleArn": "arn:aws:iam::560449670390:role/ecsTaskExecutionRole",
   "containerDefinitions": [
     {
-      "name": "zorvyn-backend",
+      "name": "assignment-backend",
       "image": "560449670390.dkr.ecr.ap-south-1.amazonaws.com/zorvyn-backend:latest",
       "cpu": 0,
       "portMappings": [
@@ -23,7 +23,7 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/zorvyn-backend-task",
+          "awslogs-group": "/ecs/assignment-backend-task",
           "awslogs-create-group": "true",
           "awslogs-region": "ap-south-1",
           "awslogs-stream-prefix": "ecs"

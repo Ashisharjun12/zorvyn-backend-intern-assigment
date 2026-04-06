@@ -1,5 +1,6 @@
 {
   "family": "zorvyn-backend",
+  "executionRoleArn": "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
   "containerDefinitions": [
     {
       "name": "zorvyn-backend",

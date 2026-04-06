@@ -9,7 +9,6 @@ env:
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
   ECS_SERVICE: "assignment-backend-service"
   ECS_CLUSTER: "assignment-backend-cluster"
-  ECS_TASK_DEFINITION: ${{ secrets.ECS_TASK_DEFINATION }}
   CONTAINER_NAME: "assignment-backend"
 
 jobs:
@@ -54,7 +53,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}       # ← fixed, use env not secret
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -92,3 +91,5 @@ jobs:
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
+
+

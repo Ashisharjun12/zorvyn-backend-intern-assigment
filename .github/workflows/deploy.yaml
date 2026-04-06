@@ -43,6 +43,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     environment: production
+    timeout-minutes: 20          # ← prevent entire job from freezing
 
     steps:
       - name: Checkout
@@ -53,7 +54,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ${{ env.AWS_REGION }}       # ← fixed, use env not secret
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -86,10 +87,9 @@ jobs:
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        timeout-minutes: 10      # ← stop waiting after 10 mins
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
-
-

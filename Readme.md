@@ -6,7 +6,7 @@ My main goal here was to create something that isn't just a "CRUD app" but a sol
 
 ---
 
-##  The Architecture: "Modular Monolith"
+## The Architecture: "Modular Monolith"
 
 Instead of a messy "everything-in-one-folder" approach or over-engineering with microservices too early, I went with a **Modular Monolith**. 
 
@@ -32,11 +32,22 @@ I didn't just pick random tools; I chose these for build speed and type safety:
 - **ORM**: **Drizzle ORM**. Honestly, I prefer it over Prisma because it's much faster and feels more like writing actual SQL.
 - **Validation**: **Zod**. Every single request is validated before it even hits the controller.
 - **Testing**: **Vitest**. Super fast, way better than Jest for modern ESM projects.
+- **Logging**: **Pino**. Because console.log is for amateurs; Pino gives me structured, high-performance JSON logs.
+- **Security**: **Express Rate Limit** & **Helmet**. Essential for protecting the API from brute force and common web vulnerabilities.
 - **Docs**: **Swagger/OpenAPI**. Good documentation is as important as the code.
 
 ---
 
-##  What this project actually does
+## Technical Decisions & "Why I did this"
+
+- **Why Drivel over Prisma?** Prisma is great, but its engine is heavy. I wanted something that stays close to SQL and is lightweight for serverless/containerized environments. Drizzle hits that sweet spot.
+- **Security Strategy**: I've implemented **Express Rate Limit** on all public routes to prevent abuse. Combine that with **Helmet** and **BCryptJS** for password hashing, and the API is pretty solid.
+- **Structured Logging**: I chose **Pino** because it's the fastest logger in the Node.js ecosystem. In a production environment, having JSON logs makes debugging with tools like CloudWatch or ELK a breeze.
+- **CI/CD Logic**: I went with a dual deployment (AWS + DigitalOcean). AWS shows the "Enterprise" side (ECR/ECS), while DigitalOcean provides a fast, developer-friendly mirror for the live demo.
+
+---
+
+## What this project actually does
 
 ### 1. Security First (RBAC)
 I've implemented a robust Role-Based Access Control system. It's not just a boolean check; I have a dedicated middleware that handles hierarchies:
@@ -129,24 +140,20 @@ I'm a big believer in automated testing. You can't ship without it.
 
 ---
 
-## 🚀 Deployment & CI/CD
+## 🚀 API Endpoints Overview
 
-I've set up two ways to see this in action:
+The API follows a consistent RESTful pattern. All protected endpoints require a Bearer Token in the `Authorization` header.
 
-### 1. AWS (Enterprise Setup)
-I have a full **GitHub Actions** pipeline that builds a Docker image, pushes it to **Amazon ECR**, and deploys it to **Amazon ECS (Fargate)**. It's fully automated on every push to `main`.
+###  Role Access Key
+| Role | Description |
+| :--- | :--- |
+| **Public** | No authentication required |
+| **All** | Any authenticated user (Viewer, Analyst, Admin) |
+| **A/A** | Admin and Analyst only |
+| **Admin** | Admin only |
 
-### 2. DigitalOcean (Live Demo)
-Since AWS can get expensive, I've also deployed a mirror to DigitalOcean using student credits for you to play with right now!
-
-- **Live Link (API Docs)**: [View Deployment](https://king-prawn-app-k6p4h.ondigitalocean.app/api/docs/#/)
-- **Health Check**: [Is it alive?](https://king-prawn-app-k6p4h.ondigitalocean.app/api/health)
-
----
-
-## API Reference at a Glance
-
-| Module | Method | Endpoint | Access Level |
+###  Authentication Module
+| Method | Endpoint | Description | Access |
 | :--- | :--- | :--- | :--- |
 | `POST` | `/auth/register` | Register a new user | **Public** |
 | `POST` | `/auth/login` | Authenticate & get JWT | **Public** |
@@ -183,7 +190,6 @@ The API is fully documented using Swagger/OpenAPI 3.0.
 
 - **Live Demo & API Docs**: [https://king-prawn-app-k6p4h.ondigitalocean.app/api/docs/#/](https://king-prawn-app-k6p4h.ondigitalocean.app/api/docs/#/)
 - **Local Dev UI**: [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
-- **Static Spec**: See `swagger.yaml` in the root directory.
 
 ---
 
@@ -202,3 +208,5 @@ Live deployment utilizing student credits.
 - **Health Status**: [Server Health Check](https://king-prawn-app-k6p4h.ondigitalocean.app/api/health)
 
 ---
+
+**Developed by Ashish Kumar** | [LinkedIn](https://www.linkedin.com/in/ashish-raj-300943188/) | [portifilio website](https://www.ashishdev.online/)
